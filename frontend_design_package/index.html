@@ -821,6 +821,10 @@
             ${sections.three_month_plan.map(renderMonthPlan).join("")}
           </div>
           <div class="strategy-card wide">
+            <h3>人生课题</h3>
+            ${renderLifeLesson(sections.life_lesson)}
+          </div>
+          <div class="strategy-card wide">
             <h3>关键提醒</h3>
             <ul>${sections.key_reminders.map(item => `<li>${item}</li>`).join("")}</ul>
             <details><summary>查看 analysis JSON 证据链</summary>
@@ -857,6 +861,33 @@
 
     function renderMonthPlan(item) {
       return `<div class="month-card"><strong>${item.month}</strong><ol>${item.actions.map(action => `<li>${action}</li>`).join("")}</ol></div>`;
+    }
+
+    function renderLifeLesson(item) {
+      if (!item) return `<p class="muted">人生课题正在生成中。</p>`;
+      return `<div class="month-card">
+          <strong>核心卡点</strong>
+          <p class="muted">${item.core_issue}</p>
+        </div>
+        <div class="report-grid">
+          <div class="strategy-card">
+            <h4>现实中的具体表现</h4>
+            <ul>${(item.real_world_patterns || []).map(text => `<li>${text}</li>`).join("")}</ul>
+          </div>
+          <div class="strategy-card">
+            <h4>不处理的现实代价</h4>
+            <p class="muted">${item.hidden_cost}</p>
+            <h4>突破方法</h4>
+            <p class="muted">${item.breakthrough_method}</p>
+          </div>
+        </div>
+        <div class="career-grid" style="margin-top:12px;">
+          ${(item.practice_plan || []).map(step => `<div class="career-card"><h4>${step.action}</h4><p class="muted"><strong>怎么做：</strong>${step.how_to_do_it}</p><p class="muted"><strong>频率：</strong>${step.frequency}</p></div>`).join("")}
+        </div>
+        <div class="month-card">
+          <strong>重大选择前先问自己</strong>
+          <ol>${(item.decision_questions || []).map(question => `<li>${question}</li>`).join("")}</ol>
+        </div>`;
     }
 
     function renderNavigationCard(card) {

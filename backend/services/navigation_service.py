@@ -36,6 +36,14 @@ __ANALYSIS_JSON__
   "unsuitable_directions": [{"type": "", "reason": "", "damage_control": ""}],
   "money_path": [{"stage": "", "focus": "", "actions": []}],
   "three_month_plan": [{"month": "", "actions": []}],
+  "life_lesson": {
+    "core_issue": "",
+    "real_world_patterns": [],
+    "hidden_cost": "",
+    "breakthrough_method": "",
+    "practice_plan": [{"action": "", "how_to_do_it": "", "frequency": ""}],
+    "decision_questions": []
+  },
   "key_reminders": []
 }
 """
@@ -143,6 +151,7 @@ def build_navigation_analysis(
     unsuitable = _unsuitable_directions(strongest_ten_god, ji)
     money = _money_strategy(career_directions, strongest_ten_god)
     plan = _three_month_plan(career_directions)
+    life_lesson = _life_lesson(strongest_ten_god, ji, qa)
     bazi_signals = [
         _signal("日主", f"日主为{bazi_chart['day_master']['stem']}，五行属{bazi_chart['day_master']['element']}。", "用于判断适合的工作节奏和资源需求。"),
         _signal("强弱", f"经历校验后判断为{qa.get('final_judgment', bazi_chart['preliminary']['strength'])}，置信度{qa.get('confidence', bazi_chart['preliminary'].get('confidence', 60))}%。", "决定是更适合借平台蓄力，还是主动输出和承担。"),
@@ -183,6 +192,7 @@ def build_navigation_analysis(
         "unsuitable_directions": unsuitable,
         "money_strategy": money,
         "three_month_plan": plan,
+        "life_lesson": life_lesson,
         "evidence_chain": evidence_chain,
         "meta": {
             "birth_name": birth_info.get("name") or "",
@@ -219,6 +229,7 @@ def _build_strategy_report(analysis_json: dict[str, Any]) -> dict[str, Any]:
         "unsuitable_directions": analysis_json["unsuitable_directions"],
         "money_path": analysis_json["money_strategy"],
         "three_month_plan": analysis_json["three_month_plan"],
+        "life_lesson": analysis_json["life_lesson"],
         "key_reminders": [
             "不要频繁换方向。至少用 3 个月验证一个岗位方向，再判断是否调整。",
             "不要只学习不产出。每周至少留下 1 个可展示成果：文档、流程图、拆解报告、复盘或案例。",
@@ -343,6 +354,58 @@ def _three_month_plan(career_directions: list[dict[str, str]]) -> list[dict[str,
             ],
         },
     ]
+
+
+def _life_lesson(strongest_ten_god: str, ji: list[str], qa: dict[str, Any]) -> dict[str, Any]:
+    mode = {
+        "yin_star": "容易在资料、课程和思考里停留太久，真正对外发布的作品偏少。",
+        "bijie": "容易被人情、比较和团队节奏带走，自己的主线推进变慢。",
+        "shi_shang": "容易想法很多、开头很快，但后续复盘、收尾和结果包装不足。",
+        "cai_star": "容易被短期机会和收入波动牵动，忽略长期可复用的能力资产。",
+        "guan_sha": "容易被规则、评价和任务压力推着走，忙完很多事却没有留下自己的成果。",
+    }.get(strongest_ten_god, "容易同时尝试太多方向，导致每条线都没有形成清晰成果。")
+    qa_note = "问答校验已纳入现实经历，说明这个课题要用真实结果来修正，而不是只靠盘面判断。"
+    if not (qa.get("answers") or []):
+        qa_note = "当前问答校验不足，建议先用 3 个月行动结果继续验证这个课题。"
+    return {
+        "core_issue": f"你反复卡住的核心模式是：{mode}这会让你看起来一直在努力，但成果没有稳定沉淀到作品、履历、技能或收入里。",
+        "real_world_patterns": [
+            "频繁怀疑方向：看到新机会、新课程或别人评价后，容易重新推翻原计划。",
+            "做了很多零散任务：临时任务、帮忙、学习笔记很多，但能放进作品集或简历的成果偏少。",
+            "长期项目推进慢：重要但不紧急的事，比如作品集、案例复盘、求职准备，经常被日常琐事挤掉。",
+            "学了很多但没有转化：收藏、听课、研究不少，但没有变成案例、收入、岗位竞争力或可展示页面。",
+        ],
+        "hidden_cost": f"如果不处理这个模式，现实代价不是“运气不好”，而是忙了很久却没有成长资产：简历没有变强、作品集没有增加、收入议价没有提高，还会因为一直换方向而缺少复利。{qa_note}",
+        "breakthrough_method": "把每一次学习、任务和选择都绑定到一个可见交付物上。所谓交付物，就是别人能看到、能评价、能证明你能力的东西，例如一份 SOP、一页项目复盘、一个用户访谈总结、一张流程图、一个数据看板或一个可公开的作品链接。",
+        "practice_plan": [
+            {
+                "action": "每天留下一个最小成果",
+                "how_to_do_it": "每天结束前用 15 分钟写下：今天做了什么、产出了什么文件/截图/链接、它能证明哪项能力。如果没有产出，就补一个 5 行复盘。",
+                "frequency": "每天 1 次，连续 30 天。",
+            },
+            {
+                "action": "每周整理一份作品材料",
+                "how_to_do_it": "从本周任务里选 1 件事，整理成“问题-动作-结果-下一步”的小案例，哪怕只有半页也要保存到作品集文件夹。",
+                "frequency": "每周 1 次，固定在周日或休息日前。",
+            },
+            {
+                "action": "给临时任务加边界",
+                "how_to_do_it": "接任务前先问：这件事的交付物是什么？截止时间是什么？做完能不能沉淀为模板、流程或案例？如果三个都没有，只投入必要时间。",
+                "frequency": "每次接新任务前执行。",
+            },
+            {
+                "action": "建立 3 个月方向账本",
+                "how_to_do_it": "只追踪一个主方向，记录投递岗位、作品数量、面试反馈、收入机会。不要用情绪判断方向，用数据判断。",
+                "frequency": "每周更新 1 次，连续 12 周。",
+            },
+        ],
+        "decision_questions": [
+            "这件事做完以后，能不能变成作品、案例、技能证明或收入机会？",
+            "如果 3 个月后回看，这个选择会让我的简历更清楚，还是只是让我更忙？",
+            "我现在是在解决真实问题，还是在用学习、搜索和准备逃避交付？",
+            f"这件事是否会加重我当前需要避开的模式：{'、'.join(ji) if ji else '无复盘、无沉淀、无边界'}？",
+        ],
+    }
 
 
 def _astrology_signals(astrology: dict[str, Any]) -> list[dict[str, str]]:
