@@ -1096,6 +1096,10 @@ def preview_page() -> str:
             <h3>适合的职业方向</h3>
             <div class="career-grid">${{sections.career_directions.map(renderCareerDirection).join("")}}</div>
           </div>
+          <div class="strategy-card wide">
+            <h3>适合发展的城市</h3>
+            ${{renderDevelopmentEnvironment(sections.development_environment)}}
+          </div>
           <div class="strategy-card">
             <h3>不适合的方向</h3>
             <ul class="strategy-list">${{sections.unsuitable_directions.map(renderUnsuitableDirection).join("")}}</ul>
@@ -1137,6 +1141,15 @@ def preview_page() -> str:
         <p class="muted"><strong>如何切入：</strong>${{item.entry}}</p>
         <p class="muted"><strong>需要补什么：</strong>${{item.skill_gap}}</p>
       </div>`;
+    }}
+
+    function renderDevelopmentEnvironment(env) {{
+      if (!env) return `<p class="muted">城市建议正在生成中。</p>`;
+      const rows = (env.city_ranking || []).map(item => `<div class="city-row"><strong>${{item.city}}</strong><span>${{item.score}}</span><span>${{item.reason}}<br><em class="muted">${{item.how_to_test || ""}}</em></span></div>`).join("");
+      return `<p class="muted">${{env.summary}}</p>
+        <div style="margin-top:12px;">${{rows}}</div>
+        <h4>怎么判断一座城市是否真的适合你</h4>
+        <ul>${{(env.selection_rules || []).map(rule => `<li>${{rule}}</li>`).join("")}}</ul>`;
     }}
 
     function renderUnsuitableDirection(item) {{

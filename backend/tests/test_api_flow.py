@@ -144,10 +144,12 @@ def test_navigation_multiple_modules_and_city_ranking():
     report = result["report"]
     assert report["selected_modules"] == ["talent", "city", "life_lesson"]
     assert report["analysis_json"]["core_traits"]
+    assert report["analysis_json"]["development_environment"]["city_ranking"]
     assert report["analysis_json"]["life_lesson"]["core_issue"]
     assert len(report["analysis_json"]["life_lesson"]["practice_plan"]) >= 3
     assert report["report_sections"]["real_world_patterns"]
     assert report["report_sections"]["career_directions"]
+    assert report["report_sections"]["development_environment"]["city_ranking"][0]["city"]
     assert report["report_sections"]["life_lesson"]["decision_questions"]
 
 
@@ -160,6 +162,7 @@ def test_navigation_full_and_astrology_fallback_basis():
     assert report["analysis_json"]["bazi_signals"]
     assert report["analysis_json"]["astrology_signals"]
     assert report["analysis_json"]["qa_validation"]
+    assert report["report_sections"]["development_environment"]["summary"]
     assert report["report_sections"]["unsuitable_directions"]
     assert report["report_sections"]["life_lesson"]["hidden_cost"]
     assert "作品" in report["report_sections"]["life_lesson"]["hidden_cost"]

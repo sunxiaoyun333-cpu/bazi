@@ -33,6 +33,7 @@ __ANALYSIS_JSON__
   "basis": {"bazi": [], "astrology": [], "qa": []},
   "real_world_patterns": [],
   "career_directions": [{"job": "", "why": "", "entry": "", "skill_gap": ""}],
+  "development_environment": {"summary": "", "city_ranking": [], "selection_rules": []},
   "unsuitable_directions": [{"type": "", "reason": "", "damage_control": ""}],
   "money_path": [{"stage": "", "focus": "", "actions": []}],
   "three_month_plan": [{"month": "", "actions": []}],
@@ -148,6 +149,7 @@ def build_navigation_analysis(
     yong = qa.get("yong_shen") or _fallback_yong_ji(bazi_chart)[0]
     ji = qa.get("ji_shen") or _fallback_yong_ji(bazi_chart)[1]
     career_directions = _career_directions(strongest_ten_god)
+    development_environment = _development_environment(yong, qa, astrology)
     unsuitable = _unsuitable_directions(strongest_ten_god, ji)
     money = _money_strategy(career_directions, strongest_ten_god)
     plan = _three_month_plan(career_directions)
@@ -189,6 +191,7 @@ def build_navigation_analysis(
         "strengths": strengths,
         "risks": risks,
         "suitable_career_directions": career_directions,
+        "development_environment": development_environment,
         "unsuitable_directions": unsuitable,
         "money_strategy": money,
         "three_month_plan": plan,
@@ -226,6 +229,7 @@ def _build_strategy_report(analysis_json: dict[str, Any]) -> dict[str, Any]:
             _judgment("你不需要一开始就做大决策岗位", "当前策略更适合从助理、运营、流程和客户成功切入。", "先在项目里练拆解、沟通、文档和复盘，逐渐获得更大责任。", "投递岗位时选择“有导师、有流程、有项目”的团队。"),
         ],
         "career_directions": analysis_json["suitable_career_directions"],
+        "development_environment": analysis_json["development_environment"],
         "unsuitable_directions": analysis_json["unsuitable_directions"],
         "money_path": analysis_json["money_strategy"],
         "three_month_plan": analysis_json["three_month_plan"],
@@ -266,6 +270,56 @@ def _career_directions(strongest_ten_god: str) -> list[dict[str, str]]:
         {"job": job, "why": why, "entry": entry, "skill_gap": skill_gap}
         for job, why, entry, skill_gap in items[:4]
     ]
+
+
+def _development_environment(yong: list[str], qa: dict[str, Any], astrology: dict[str, Any]) -> dict[str, Any]:
+    ranking = _rank_cities(yong)
+    qa_basis = "已结合问答校验后的喜用倾向，城市建议只作为发展环境筛选，不替代现实岗位机会。"
+    if not (qa.get("answers") or []):
+        qa_basis = "当前问答校验不足，城市建议先按命盘倾向给出，需要用真实岗位机会继续验证。"
+    astro_basis = "星盘用于辅助判断职业呈现和迁移体验。"
+    if (astrology.get("_meta") or {}).get("status") == "ready":
+        astro_basis = f"参考{_planet_text(astrology, 'mc')}以及太阳、月亮的工作节奏需求。"
+    return {
+        "summary": "适合你的城市，不是单纯“旺你”的地方，而是能提供岗位密度、清晰流程、可积累案例和稳定反馈的环境。",
+        "city_ranking": ranking,
+        "selection_rules": [
+            f"优先看目标岗位密度：城市里是否有足够的{ranking[0]['tags']}相关岗位，而不只是城市听起来适合。",
+            "优先选能积累作品的团队：有项目、有复盘、有明确交付物，比城市标签更重要。",
+            "迁移前先做小测试：投递 20 个当地岗位、约 3 次行业访谈，或短住 2-4 周观察真实节奏。",
+            f"{qa_basis} {astro_basis}",
+        ],
+    }
+
+
+def _rank_cities(yong: list[str]) -> list[dict[str, Any]]:
+    yong_set = set(yong)
+    rows = []
+    for city in CANDIDATE_CITIES:
+        profile = CITY_PROFILES[city]
+        overlap = yong_set.intersection(profile["elements"])
+        score = 74 + len(overlap) * 9
+        if "平台" in profile["tags"] or "互联网" in profile["tags"]:
+            score += 4
+        if "国际" in profile["tags"] or "国际化" in profile["tags"]:
+            score += 3
+        score = min(score, 96)
+        rows.append(
+            {
+                "city": city,
+                "score": score,
+                "tags": "、".join(profile["tags"]),
+                "reason": _city_reason(city, profile, overlap),
+                "how_to_test": f"先搜索{city}的目标岗位数量、薪资区间和岗位 JD，把高频要求整理成一页表。",
+            }
+        )
+    return sorted(rows, key=lambda item: item["score"], reverse=True)[:6]
+
+
+def _city_reason(city: str, profile: dict[str, Any], overlap: set[str]) -> str:
+    if overlap:
+        return f"{city}的{profile['tags'][0]}、{profile['tags'][1]}资源，与当前喜用五行{'、'.join(sorted(overlap))}有匹配度。现实上适合寻找能沉淀项目案例的岗位。"
+    return f"{city}具备{profile['tags'][0]}、{profile['tags'][1]}资源，可作为备选；是否适合要看目标岗位密度和生活成本。"
 
 
 def _unsuitable_directions(strongest_ten_god: str, ji: list[str]) -> list[dict[str, str]]:
@@ -501,7 +555,8 @@ def _legacy_cards(report_sections: dict[str, Any], selected: list[str]) -> list[
             }
         )
     if "city" in selected:
-        cards.append({"module": "city", "title": "城市参考", "answer": "城市选择需结合岗位机会和生活成本。", "explanation": "当前版本保留城市评分作为辅助，不作为主报告核心。", "professional_basis": {"bazi": "按喜用五行和城市产业气质参考。", "astrology": "按 MC、九宫和迁移主题辅助。"}, "suggestions": ["优先看岗位密度。", "先短住或远程项目测试。", "不要只因城市标签迁移。"], "city_ranking": _city_ranking(report_sections)})
+        env = report_sections["development_environment"]
+        cards.append({"module": "city", "title": "适合发展的城市", "answer": env["summary"], "explanation": "城市建议用于筛选发展环境，最终仍要落到岗位机会、生活成本和作品沉淀。", "professional_basis": {"bazi": "按喜用五行和城市产业气质参考。", "astrology": "按 MC、九宫和迁移主题辅助。"}, "suggestions": env["selection_rules"][:3], "city_ranking": env["city_ranking"]})
     return cards or [
         {
             "module": "full",
@@ -512,14 +567,6 @@ def _legacy_cards(report_sections: dict[str, Any], selected: list[str]) -> list[
             "suggestions": report_sections["key_reminders"][:3],
         }
     ]
-
-
-def _city_ranking(report_sections: dict[str, Any]) -> list[dict[str, Any]]:
-    ranking = []
-    for index, city in enumerate(CANDIDATE_CITIES[:5]):
-        profile = CITY_PROFILES[city]
-        ranking.append({"city": city, "score": 92 - index * 3, "reason": f"{city}的{profile['tags'][0]}和{profile['tags'][1]}资源可作为岗位机会参考。"})
-    return ranking
 
 
 def _ten_god_real_world(key: str) -> str:
