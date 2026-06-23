@@ -918,7 +918,6 @@ def preview_page() -> str:
 
     function renderChart(data) {{
       chartPayload = data;
-      activeAstroKey = "sun";
       const birth = data.birth_info;
       const chart = data.bazi_chart;
       const astrology = data.astrology;
