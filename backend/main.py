@@ -462,6 +462,9 @@ def preview_page() -> str:
     .strategy-card.wide {{ grid-column:1 / -1; }}
     .strategy-card h3 {{ margin:0 0 12px; font-family:var(--font-display); color:#5a5a40; font-size:20px; }}
     .strategy-card h4 {{ margin:14px 0 7px; color:var(--ink); font-size:15px; }}
+    details.strategy-card {{ display:block; }}
+    details.strategy-card summary {{ font-family:var(--font-display); color:#5a5a40; font-size:20px; font-weight:700; cursor:pointer; }}
+    details.strategy-card[open] summary {{ margin-bottom:12px; }}
     .basis-list,.strategy-list {{ display:grid; gap:10px; margin:0; padding:0; list-style:none; }}
     .basis-list li,.strategy-list li,.plan-action {{ border:1px solid rgba(229,226,217,.82); border-radius:12px; padding:12px; background:var(--paper); line-height:1.65; }}
     .basis-list strong,.strategy-list strong {{ display:block; color:var(--ink); margin-bottom:4px; }}
@@ -1080,14 +1083,14 @@ def preview_page() -> str:
           <p class="muted" style="margin-top:8px;">${{sections.core_profile.advice}}</p>
         </div>
         <div class="report-grid">
-          <div class="strategy-card wide">
-            <h3>盘面依据</h3>
+          <details class="strategy-card wide">
+            <summary>盘面依据</summary>
             <div class="grid">
               ${{renderBasisBlock("八字依据", sections.basis.bazi)}}
               ${{renderBasisBlock("星盘依据", sections.basis.astrology)}}
             </div>
             ${{renderBasisBlock("问答校验依据", sections.basis.qa)}}
-          </div>
+          </details>
           <div class="strategy-card wide">
             <h3>现实表现</h3>
             <ul class="strategy-list">${{sections.real_world_patterns.map(renderJudgmentItem).join("")}}</ul>
@@ -1145,7 +1148,7 @@ def preview_page() -> str:
 
     function renderDevelopmentEnvironment(env) {{
       if (!env) return `<p class="muted">城市建议正在生成中。</p>`;
-      const rows = (env.city_ranking || []).map(item => `<div class="city-row"><strong>${{item.city}}</strong><span>${{item.score}}</span><span>${{item.reason}}<br><em class="muted">${{item.how_to_test || ""}}</em></span></div>`).join("");
+      const rows = (env.city_ranking || []).map(item => `<div class="city-row"><strong>${{item.city}}</strong><span>${{item.score}}</span><span>${{item.reason}}</span></div>`).join("");
       return `<p class="muted">${{env.summary}}</p>
         <div style="margin-top:12px;">${{rows}}</div>
         <h4>怎么判断一座城市是否真的适合你</h4>
