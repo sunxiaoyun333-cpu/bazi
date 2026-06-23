@@ -69,8 +69,12 @@ def test_full_api_flow():
     assert body["recommendations"]["jewelry"]
 
     navigation = generate_navigation(NavigationRequest(session_id=session_id, modules=["career"]))
-    nav_card = navigation["report"]["cards"][0]
+    report = navigation["report"]
+    nav_card = report["cards"][0]
     assert navigation["report"]["selected_modules"] == ["career"]
+    assert "analysis_json" in report
+    assert "report_sections" in report
+    assert report["report_sections"]["career_directions"][0]["job"]
     assert nav_card["professional_basis"]["bazi"]
 
 
@@ -129,16 +133,19 @@ def test_navigation_single_module():
     assert card["explanation"]
     assert len(card["suggestions"]) == 3
     assert "professional_basis" in card
+    assert report["analysis_json"]["suitable_career_directions"]
+    assert report["report_sections"]["money_path"]
+    assert len(report["report_sections"]["three_month_plan"]) == 3
 
 
 def test_navigation_multiple_modules_and_city_ranking():
     session_id = _prepared_navigation_session()
     result = generate_navigation(NavigationRequest(session_id=session_id, modules=["talent", "city", "life_lesson"]))
-    cards = result["report"]["cards"]
-    assert [card["module"] for card in cards] == ["talent", "city", "life_lesson"]
-    city_card = next(card for card in cards if card["module"] == "city")
-    assert city_card["city_ranking"]
-    assert city_card["city_ranking"][0]["score"] > 0
+    report = result["report"]
+    assert report["selected_modules"] == ["talent", "city", "life_lesson"]
+    assert report["analysis_json"]["core_traits"]
+    assert report["report_sections"]["real_world_patterns"]
+    assert report["report_sections"]["career_directions"]
 
 
 def test_navigation_full_and_astrology_fallback_basis():
@@ -147,9 +154,14 @@ def test_navigation_full_and_astrology_fallback_basis():
     report = result["report"]
     assert report["selected_modules"] == ["talent", "career", "city", "life_lesson"]
     assert report["astrology_status"] in {"ready", "fallback"}
-    assert all("professional_basis" in card for card in report["cards"])
+    assert report["analysis_json"]["bazi_signals"]
+    assert report["analysis_json"]["astrology_signals"]
+    assert report["analysis_json"]["qa_validation"]
+    assert report["report_sections"]["unsuitable_directions"]
+    assert report["report_sections"]["key_reminders"]
+    assert "AI产品" in str(report["report_sections"]) or "项目助理" in str(report["report_sections"]) or "知识库运营" in str(report["report_sections"])
     if report["astrology_status"] == "fallback":
-        assert any("星盘数据缺失" in card["professional_basis"]["astrology"] for card in report["cards"])
+        assert any("星盘数据暂不可用" in item["basis"] for item in report["analysis_json"]["astrology_signals"])
 
 
 def test_astrology_adapter_returns_expected_chart_shape():

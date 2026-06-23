@@ -455,6 +455,21 @@ def preview_page() -> str:
     details {{ border-top:1px solid var(--line); margin-top:12px; padding-top:10px; }}
     summary {{ cursor:pointer; color:var(--accent); font-weight:600; }}
     .city-row {{ display:grid; grid-template-columns:72px 52px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }}
+    .strategy-hero {{ border:1px solid var(--line); border-radius:22px; padding:24px; background:linear-gradient(180deg,#fff,#fbfaf5); box-shadow:var(--shadow); margin:14px 0; }}
+    .strategy-hero h2 {{ font-size:26px; margin-bottom:10px; }}
+    .report-grid {{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:14px; }}
+    .strategy-card {{ border:1px solid var(--line); border-radius:18px; padding:18px; background:#fff; box-shadow:0 10px 24px rgba(74,68,58,.04); }}
+    .strategy-card.wide {{ grid-column:1 / -1; }}
+    .strategy-card h3 {{ margin:0 0 12px; font-family:var(--font-display); color:#5a5a40; font-size:20px; }}
+    .strategy-card h4 {{ margin:14px 0 7px; color:var(--ink); font-size:15px; }}
+    .basis-list,.strategy-list {{ display:grid; gap:10px; margin:0; padding:0; list-style:none; }}
+    .basis-list li,.strategy-list li,.plan-action {{ border:1px solid rgba(229,226,217,.82); border-radius:12px; padding:12px; background:var(--paper); line-height:1.65; }}
+    .basis-list strong,.strategy-list strong {{ display:block; color:var(--ink); margin-bottom:4px; }}
+    .career-grid {{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }}
+    .career-card {{ border:1px solid rgba(229,226,217,.9); border-radius:16px; padding:14px; background:var(--paper); }}
+    .career-card h4 {{ margin:0 0 8px; font-family:var(--font-display); color:#5a5a40; font-size:18px; }}
+    .money-stage,.month-card {{ border:1px solid rgba(229,226,217,.9); border-radius:16px; padding:14px; background:var(--paper); margin-top:10px; }}
+    .month-card ol,.money-stage ul {{ margin:8px 0 0; padding-left:20px; line-height:1.8; color:var(--muted); }}
     .badge {{ display:inline-flex; padding:5px 10px; border-radius:999px; border:1px solid var(--line); color:var(--accent); background:var(--wash); font-size:13px; }}
     .error {{ color:#8a2f21; background:#fff7f5; border:1px solid #e2b4a9; padding:14px; border-radius:14px; }}
     .modal-backdrop {{ position:fixed; inset:0; z-index:20; display:grid; place-items:center; padding:18px; background:rgba(24,32,38,.42); }}
@@ -465,7 +480,7 @@ def preview_page() -> str:
     .delta-up {{ color:var(--accent); font-weight:700; }}
     .delta-down {{ color:#9c3f32; font-weight:700; }}
     .modal-actions {{ display:flex; justify-content:flex-end; margin-top:14px; }}
-    @media (max-width:820px) {{ main {{ padding-left:14px; padding-right:14px; }} .layout,.grid,.astro-panel,.landing-grid,.module-grid,.inline,.chart-top,.info-strip,.pillar-board {{ grid-template-columns:1fr; }} header {{ display:block; margin-left:-14px; margin-right:-14px; }} .pillars {{ grid-template-columns:repeat(2,1fr); }} .landing-hero {{ min-height:86vh; }} .landing h1 {{ font-size:40px; }} .landing-lead {{ font-size:16px; }} form,#stage {{ padding:22px; }} .form-intro {{ align-items:flex-start; }} .pillar-card {{ min-height:auto; }} .element-head {{ grid-template-columns:auto 1fr auto; }} .element-status {{ grid-column:2 / 4; width:max-content; }} .astro-side.selected {{ position:fixed; left:0; right:0; bottom:0; z-index:30; padding:14px; background:linear-gradient(180deg,rgba(248,246,239,0),rgba(248,246,239,.92) 18%,rgba(248,246,239,1)); }} .astro-side.selected .astro-list, .astro-side.selected details {{ display:none; }} .astro-side.selected .astro-explain-card {{ max-height:78vh; overflow:auto; border-radius:22px 22px 0 0; box-shadow:0 -16px 38px rgba(36,32,24,.18); }} .astro-drawer-close {{ display:inline-flex; margin-left:auto; padding:8px 10px; font-size:12px; }} }}
+    @media (max-width:820px) {{ main {{ padding-left:14px; padding-right:14px; }} .layout,.grid,.astro-panel,.landing-grid,.module-grid,.inline,.chart-top,.info-strip,.pillar-board,.report-grid,.career-grid {{ grid-template-columns:1fr; }} header {{ display:block; margin-left:-14px; margin-right:-14px; }} .pillars {{ grid-template-columns:repeat(2,1fr); }} .landing-hero {{ min-height:86vh; }} .landing h1 {{ font-size:40px; }} .landing-lead {{ font-size:16px; }} form,#stage {{ padding:22px; }} .form-intro {{ align-items:flex-start; }} .pillar-card {{ min-height:auto; }} .element-head {{ grid-template-columns:auto 1fr auto; }} .element-status {{ grid-column:2 / 4; width:max-content; }} .astro-side.selected {{ position:fixed; left:0; right:0; bottom:0; z-index:30; padding:14px; background:linear-gradient(180deg,rgba(248,246,239,0),rgba(248,246,239,.92) 18%,rgba(248,246,239,1)); }} .astro-side.selected .astro-list, .astro-side.selected details {{ display:none; }} .astro-side.selected .astro-explain-card {{ max-height:78vh; overflow:auto; border-radius:22px 22px 0 0; box-shadow:0 -16px 38px rgba(36,32,24,.18); }} .astro-drawer-close {{ display:inline-flex; margin-left:auto; padding:8px 10px; font-size:12px; }} }}
   </style>
 </head>
 <body>
@@ -1045,10 +1060,91 @@ def preview_page() -> str:
     }}
 
     function renderNavigationReport(report) {{
-      el(`${{steps(4)}}<h2>人生导航报告</h2><p class="section-card">${{report.summary}}</p>
-        <p class="muted">已结合出生信息、八字初判、基础星盘结构，以及你的经历校验答案。</p>
-        ${{report.astrology_status !== "ready" ? `<p class="muted">现代西占排盘暂不可用，当前分析以八字为主。</p>` : ""}}
-        <div>${{report.cards.map(renderNavigationCard).join("")}}</div>`);
+      const sections = report.report_sections;
+      if (!sections) {{
+        el(`${{steps(4)}}<h2>人生导航报告</h2><p class="section-card">${{report.summary}}</p>
+          <div>${{report.cards.map(renderNavigationCard).join("")}}</div>`);
+        return;
+      }}
+      el(`${{steps(4)}}<h2>人生导航报告</h2>
+        <p class="muted">已结合出生信息、八字结构、现代西占基础盘，以及你的经历问答校验。以下报告优先给现实动作，不做空泛判断。</p>
+        ${{report.astrology_status !== "ready" ? `<p class="muted">现代西占排盘暂不可用，当前分析以八字与问答校验为主。</p>` : ""}}
+        ${{renderStrategyReport(sections, report.analysis_json)}}`);
+    }}
+
+    function renderStrategyReport(sections, analysis) {{
+      return `<div class="strategy-hero">
+          <h2>${{sections.core_profile.title}}</h2>
+          <p><strong>${{sections.core_profile.one_sentence}}</strong></p>
+          <p class="muted" style="margin-top:10px;">${{sections.core_profile.real_world}}</p>
+          <p class="muted" style="margin-top:8px;">${{sections.core_profile.advice}}</p>
+        </div>
+        <div class="report-grid">
+          <div class="strategy-card wide">
+            <h3>盘面依据</h3>
+            <div class="grid">
+              ${{renderBasisBlock("八字依据", sections.basis.bazi)}}
+              ${{renderBasisBlock("星盘依据", sections.basis.astrology)}}
+            </div>
+            ${{renderBasisBlock("问答校验依据", sections.basis.qa)}}
+          </div>
+          <div class="strategy-card wide">
+            <h3>现实表现</h3>
+            <ul class="strategy-list">${{sections.real_world_patterns.map(renderJudgmentItem).join("")}}</ul>
+          </div>
+          <div class="strategy-card wide">
+            <h3>适合的职业方向</h3>
+            <div class="career-grid">${{sections.career_directions.map(renderCareerDirection).join("")}}</div>
+          </div>
+          <div class="strategy-card">
+            <h3>不适合的方向</h3>
+            <ul class="strategy-list">${{sections.unsuitable_directions.map(renderUnsuitableDirection).join("")}}</ul>
+          </div>
+          <div class="strategy-card">
+            <h3>赚钱路径</h3>
+            ${{sections.money_path.map(renderMoneyStage).join("")}}
+          </div>
+          <div class="strategy-card wide">
+            <h3>未来 3 个月行动计划</h3>
+            ${{sections.three_month_plan.map(renderMonthPlan).join("")}}
+          </div>
+          <div class="strategy-card wide">
+            <h3>关键提醒</h3>
+            <ul>${{sections.key_reminders.map(item => `<li>${{item}}</li>`).join("")}}</ul>
+            <details><summary>查看 analysis JSON 证据链</summary>
+              <ul class="basis-list">${{(analysis?.evidence_chain || []).map(item => `<li>${{item}}</li>`).join("")}}</ul>
+            </details>
+          </div>
+        </div>`;
+    }}
+
+    function renderBasisBlock(title, items) {{
+      return `<div><h4>${{title}}</h4><ul class="basis-list">${{(items || []).map(item => `<li><strong>${{item.title || item.trait || "依据"}}</strong><span class="muted">${{item.basis || ""}}</span><br><span class="muted">${{item.real_world || ""}}</span></li>`).join("")}}</ul></div>`;
+    }}
+
+    function renderJudgmentItem(item) {{
+      return `<li><strong>${{item.title}}</strong><span class="muted">依据：${{item.basis}}</span><br><span class="muted">现实表现：${{item.real_world}}</span><br><span class="muted">具体建议：${{item.advice}}</span></li>`;
+    }}
+
+    function renderCareerDirection(item) {{
+      return `<div class="career-card">
+        <h4>${{item.job}}</h4>
+        <p class="muted"><strong>为什么适合：</strong>${{item.why}}</p>
+        <p class="muted"><strong>如何切入：</strong>${{item.entry}}</p>
+        <p class="muted"><strong>需要补什么：</strong>${{item.skill_gap}}</p>
+      </div>`;
+    }}
+
+    function renderUnsuitableDirection(item) {{
+      return `<li><strong>${{item.type}}</strong><span class="muted">不适合原因：${{item.reason}}</span><br><span class="muted">如果不得不做：${{item.damage_control}}</span></li>`;
+    }}
+
+    function renderMoneyStage(item) {{
+      return `<div class="money-stage"><strong>${{item.stage}}</strong><p class="muted">${{item.focus}}</p><ul>${{item.actions.map(action => `<li>${{action}}</li>`).join("")}}</ul></div>`;
+    }}
+
+    function renderMonthPlan(item) {{
+      return `<div class="month-card"><strong>${{item.month}}</strong><ol>${{item.actions.map(action => `<li>${{action}}</li>`).join("")}}</ol></div>`;
     }}
 
     function renderNavigationCard(card) {{
