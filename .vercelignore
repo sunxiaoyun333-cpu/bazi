@@ -1,0 +1,10 @@
+.pytest_cache
+**/__pycache__
+**/*.pyc
+backend/tests
+backend/data/city_geo_raw.json
+backend/*.log
+backend/uvicorn.*.log
+backend/preview_*.log
+PRD.md
+tech.md
